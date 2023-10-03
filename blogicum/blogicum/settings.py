@@ -20,15 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (
-    "django-insecure-)tj@8o=!u8sw^u1-pbfol%n+o4&qaq7qympmp$0$lpuvvo*4=d"
-)
+SECRET_KEY = "django-insecure-)tj@8o=!u8sw^u1-pbfol%n+o4&qaq7qympmp$0$lpuvvo*4=d"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
 DEBUG = True
-#DEBUG = False
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -140,14 +137,14 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CSRF_FAILURE_VIEW = 'pages.views.csrf_failure'
+CSRF_FAILURE_VIEW = "pages.views.csrf_failure"
 
-LOGIN_REDIRECT_URL = 'blog:index'
+LOGIN_REDIRECT_URL = "blog:index"
 
-LOGIN_URL = 'login'
+LOGIN_URL = "login"
 
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / "media"
 
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 
-EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
