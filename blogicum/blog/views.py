@@ -179,9 +179,7 @@ class EditProfileView(LoginRequiredMixin, UpdateView):
         return reverse("blog:profile", kwargs={"slug": self.object.username})
 
 
-class UserDetailView(DetailView):
-    """Класс представления отображения профиля пользователя."""
-
+class UserDetailView(DetailView): 
     model = User
     fields = "__all__"
     slug_field = "username"
@@ -208,7 +206,6 @@ class UserDetailView(DetailView):
                 category__is_published=True,
             )
         page_obj = self.paginate_list(posts)
-        # PAGINATE_NUM)
         context["page_obj"] = page_obj
         return context
 
