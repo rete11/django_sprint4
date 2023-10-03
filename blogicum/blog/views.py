@@ -179,7 +179,7 @@ class EditProfileView(LoginRequiredMixin, UpdateView):
         return reverse("blog:profile", kwargs={"slug": self.object.username})
 
 
-class UserDetailView(DetailView): 
+class UserDetailView(DetailView):
     model = User
     fields = "__all__"
     slug_field = "username"
