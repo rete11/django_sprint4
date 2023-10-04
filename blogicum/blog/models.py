@@ -25,6 +25,7 @@ class PublishedModel(models.Model):
 
 
 class Post(PublishedModel):
+    """Модель публикации."""
     title = models.CharField("Заголовок", max_length=256)
     text = models.TextField("Текст")
     pub_date = models.DateTimeField(
@@ -75,6 +76,7 @@ class Post(PublishedModel):
 
 
 class Category(PublishedModel):
+    """Модель категории публикации."""
     title = models.CharField("Заголовок", max_length=256, blank=False)
     description = models.TextField("Описание", blank=False)
     slug = models.SlugField(
@@ -95,6 +97,7 @@ class Category(PublishedModel):
 
 
 class Location(PublishedModel):
+    """Модель местоположения публикации."""
     name = models.CharField(
         "Название места",
         max_length=256,
@@ -110,6 +113,7 @@ class Location(PublishedModel):
 
 
 class Comment(PublishedModel):
+    """Модель комментария к публикации."""
     text = models.TextField(
         blank=False,
         verbose_name="Текст",
