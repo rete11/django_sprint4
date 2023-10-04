@@ -1,10 +1,9 @@
 from http import HTTPStatus
+from typing import Optional
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views.generic import TemplateView
-
-from typing import Optional
 
 
 class About(TemplateView):
