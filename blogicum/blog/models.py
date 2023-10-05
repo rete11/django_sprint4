@@ -68,10 +68,12 @@ class Post(PublishedModel):
         return f'"{self.title}" от {self.pub_date}'
 
     def get_absolute_url(self):
+        '''Метод возвращающий URL объекта.'''
         return reverse("blog:post_detail", kwargs={"pk": self.pk})
 
     @property
     def comment_count(self):
+        '''Декоратор подсчета комментариев.'''
         return Comment.objects.filter(post_id=self.pk).count()
 
 
@@ -135,4 +137,5 @@ class Comment(PublishedModel):
         ordering = ("created_at",)
 
     def get_absolute_url(self):
+        '''Метод возвращающий URL объекта.'''
         return reverse("blog:post_detail", kwargs={"pk": self.post.pk})

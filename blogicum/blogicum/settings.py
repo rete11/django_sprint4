@@ -1,10 +1,10 @@
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-)tj@8o=!u8sw^u1-pbfol%n+o4&qaq7qympmp$0$lpuvvo*4=d"
+SECRET_KEY = (
+    "django-insecure-)tj@8o=!u8sw^u1-pbfol%n+o4&qaq7qympmp$0$lpuvvo*4=d"
+)
 
 DEBUG = True
 
@@ -16,8 +16,6 @@ ALLOWED_HOSTS = [
 STATICFILES_DIRS = [
     BASE_DIR / "templates",
 ]
-
-# Application definition
 
 INSTALLED_APPS = [
     "blog.apps.BlogConfig",
@@ -63,17 +61,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "blogicum.wsgi.application"
 
-# Database
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-
-# Password validation
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -90,9 +83,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-
 LANGUAGE_CODE = "ru-RU"
 
 TIME_ZONE = "UTC"
@@ -102,9 +92,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
 
 STATIC_URL = "/static/"
 

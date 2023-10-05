@@ -17,11 +17,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import PostForm, CommentForm
 from .models import Post, User, Comment, Category
 
-# Константа, которая хранит текущее время
-NOW = timezone.now()
 
 # Константа для настройки пагинации
-PAGINATE_NUM = 10
+PAGINATE_NUM: int = 10
 
 
 class PublicateLoginRequiredMixin(LoginRequiredMixin):
@@ -38,11 +36,14 @@ class PublicateLoginRequiredMixin(LoginRequiredMixin):
         action (Optional[str]): Действие, которое предполагается выполнить
         ('create', 'edit' и т.д.)
     """
+
     login_url: str = "/auth/login/"
     model: Any = None
     action: str = None
 
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> Any:
+    def dispatch(
+        self, request: HttpRequest, *args: Any, **kwargs: Any
+    ) -> Any:
         """Метод для обработки запросов перед вызовом представления.
 
         Аргументы:
@@ -80,19 +81,19 @@ class PublicateLoginRequiredMixin(LoginRequiredMixin):
         """
         if self.action == "delete":
             return reverse("blog:index")
-        elif self.action == "create":
+        if self.action == "create":
             return reverse(
                 "blog:profile",
                 kwargs={
                     "slug": self.object.author.username,
                 },
             )
-        else:
-            return self.object.get_absolute_url()
+        return self.object.get_absolute_url()
 
 
 class PostCreateView(PublicateLoginRequiredMixin, CreateView):
     """Класс представления создания новой публикации."""
+
     model: Type[Post] = Post
     template_name: str = "blog/create.html"
     form_class: Type[PostForm] = PostForm
@@ -113,13 +114,15 @@ class PostCreateView(PublicateLoginRequiredMixin, CreateView):
 
 class PostDetailView(DetailView):
     """Класс представления отображения одного поста."""
+
     model: Type[Post] = Post
     fields: str = "all"
     template_name: str = "blog/detail.html"
     queryset = Post.objects.select_related("location", "category")
 
-    def dispatch(self, request: HttpRequest,
-                 *args: Any, **kwargs: Any) -> HttpResponse:
+    def dispatch(
+        self, request: HttpRequest, *args: Any, **kwargs: Any
+    ) -> HttpResponse:
         """Переопределённый метод для проверки прав доступа и детализирования.
 
         Аргументы:
@@ -136,7 +139,7 @@ class PostDetailView(DetailView):
                 pk=kwargs["pk"],
                 is_published=True,
                 category__is_published=True,
-                pub_date__lt=NOW,
+                pub_date__lt=timezone.now(),
             )
         return super().dispatch(request, *args, **kwargs)
 
@@ -159,13 +162,14 @@ class PostDetailView(DetailView):
 
 class PostListView(ListView):
     """Класс представления списка публикаций."""
+
     model: Type[Post] = Post
     fields: str = "__all__"
     template_name: str = "blog/index.html"
     ordering = "-pub_date"
     paginate_by = PAGINATE_NUM
     queryset = Post.objects.filter(
-        pub_date__lte=NOW,
+        pub_date__lte=timezone.now(),
         is_published=True,
         category__is_published=True,
     ).select_related("location", "category")
@@ -173,6 +177,7 @@ class PostListView(ListView):
 
 class PostUpdateView(PublicateLoginRequiredMixin, UpdateView):
     """Класс представления изменения публикации."""
+
     model: Type[Post] = Post
     template_name: str = "blog/create.html"
     form_class: Type[PostForm] = PostForm
@@ -181,6 +186,7 @@ class PostUpdateView(PublicateLoginRequiredMixin, UpdateView):
 
 class PostDeleteView(PublicateLoginRequiredMixin, DeleteView):
     """Класс представления удаления публикации."""
+
     model: Type[Post] = Post
     template_name: str = "blog/create.html"
     form_class: Type[PostForm] = PostForm
@@ -190,37 +196,43 @@ class PostDeleteView(PublicateLoginRequiredMixin, DeleteView):
 class Comment_publicateLoginRequiredMixin(LoginRequiredMixin):
     """Миксин, требующий аутентификации пользователя и определенных прав на
     действия над объектами."""
+
     login_url: str = "/auth/login/"
     model = None
     action: str = None
 
-    def dispatch(self, request: HttpRequest,
-                 *args: Any, **kwargs: Any) -> HttpResponse:
+    def dispatch(
+        self, request: HttpRequest, *args: Any, **kwargs: Any
+    ) -> HttpResponse:
         """Переопределённый метод для проверки прав доступа
-           и детализирования."""
+        и детализирования."""
         if self.action != "create":
             if request.user.is_anonymous:
                 raise Http404
-            get_object_or_404(self.model, pk=kwargs["pk"], author=request.user)
+            get_object_or_404(
+                self.model, pk=kwargs["pk"], author=request.user
+            )
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self) -> str:
         """Возвращает URL-адрес для перенаправления после успешной обработки
-           формы."""
+        формы."""
         return self.object.get_absolute_url()
 
 
 class CommentCreateView(Comment_publicateLoginRequiredMixin, CreateView):
     """Представление для создания комментариев. Пользователь должен быть
     аутентифицирован."""
+
     post_id = None
     model: Type[Comment] = Comment
     form_class: Type[CommentForm] = CommentForm
     template_name: str = "blog/comment.html"
     action: str = "create"
 
-    def dispatch(self, request: HttpRequest,
-                 *args: Any, **kwargs: Any) -> HttpResponse:
+    def dispatch(
+        self, request: HttpRequest, *args: Any, **kwargs: Any
+    ) -> HttpResponse:
         """Переопределённый метод для получения поста, к которому добавляется
         комментарий.
         """
@@ -238,6 +250,7 @@ class CommentCreateView(Comment_publicateLoginRequiredMixin, CreateView):
 
 class CommentUpdateView(Comment_publicateLoginRequiredMixin, UpdateView):
     """Класс представления изменения комментария."""
+
     model: Type[Comment] = Comment
     fields = ("text",)
     template_name: str = "blog/comment.html"
@@ -245,6 +258,7 @@ class CommentUpdateView(Comment_publicateLoginRequiredMixin, UpdateView):
 
 class CommentDeleteView(Comment_publicateLoginRequiredMixin, DeleteView):
     """Класс представления удаления комментария."""
+
     model: Type[Comment] = Comment
     fields = ("text",)
     template_name: str = "blog/comment.html"
@@ -252,6 +266,7 @@ class CommentDeleteView(Comment_publicateLoginRequiredMixin, DeleteView):
 
 class EditProfileView(LoginRequiredMixin, UpdateView):
     """Класс представления отображения профиля пользователя."""
+
     login_url: str = "/auth/login/"
     model = User
     fields = (
@@ -276,17 +291,19 @@ class EditProfileView(LoginRequiredMixin, UpdateView):
 
 class PaginatorAddMixin:
     """Миксин для добавления пагинации к списку связанных объектов."""
+
     paginate_by: int = PAGINATE_NUM
 
-    def paginate_list(self, objects_list: List,
-                      paginate_by: Optional[int] = None) -> Paginator:
+    def paginate_list(
+        self, objects_list: List, paginate_by: Optional[int] = None
+    ) -> Paginator:
         """Пагинирует предоставленный список. Количество элементов на странице
         определяется параметром `paginate_by`. Если `paginate_by` не
         предоставлен, используется `self.paginate_by`.
         """
         paginate_by = paginate_by or self.paginate_by
         paginator = Paginator(objects_list, paginate_by)
-        page_number = self.request.GET.get('page')
+        page_number = self.request.GET.get("page")
         page_obj = paginator.get_page(page_number)
         return page_obj
 
@@ -305,8 +322,9 @@ class UserDetailView(PaginatorAddMixin, DetailView):
         Добавляет к контексту посты, связанные с пользователем.
         """
         context = super().get_context_data(**kwargs)
-        posts = self.object.posts.select_related("location", "category"
-                                                 ).order_by("-pub_date")
+        posts = self.object.posts.select_related(
+            "location", "category"
+        ).order_by("-pub_date")
 
         if self.request.user != self.object:
             posts = posts.filter(
@@ -329,12 +347,11 @@ class CategoryDetailView(PaginatorAddMixin, DetailView):
     queryset = Category.objects.filter(is_published=True)
 
     def get_context_data(self, **kwargs) -> dict:
-        """Добавляет к контексту посты, связанные с категорией.
-        """
+        """Добавляет к контексту посты, связанные с категорией."""
         context = super().get_context_data(**kwargs)
         posts = (
             self.object.posts.filter(
-                pub_date__lte=NOW,
+                pub_date__lte=timezone.now(),
                 is_published=True,
                 category__is_published=True,
             )
