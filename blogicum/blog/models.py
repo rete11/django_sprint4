@@ -137,5 +137,5 @@ class Comment(PublishedModel):
         ordering = ("created_at",)
 
     def get_absolute_url(self):
-        '''Метод возвращающий URL объекта.'''
+        """Метод возвращающий URL объекта."""
         return reverse("blog:post_detail", kwargs={"pk": self.post.pk})

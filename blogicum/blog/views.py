@@ -1,4 +1,5 @@
-from typing import Any, Dict, Type, Optional, List
+from http import HTTPStatus
+from typing import Any, Type, Optional
 
 from django.views.generic import (
     CreateView,
@@ -11,7 +12,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.urls import reverse
-from django.http import Http404, HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import PostForm, CommentForm
@@ -59,8 +60,7 @@ class PublicateLoginRequiredMixin(LoginRequiredMixin):
             if request.user != self.object.author:
                 if self.action == "edit":
                     return redirect(self.object.get_absolute_url())
-                else:
-                    raise Http404
+                return HttpResponse(status=HTTPStatus.NOT_FOUND)
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self) -> str:
@@ -143,13 +143,13 @@ class PostDetailView(DetailView):
             )
         return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         """
         Переопределённый метод для добавления комментариев к контексту
         страницы.
 
         Возвращает:
-            Dict[str, Any]: словарь с подготовленными данными для передачи
+            dict[str, Any]: словарь с подготовленными данными для передачи
             в шаблон.
         """
         context = super().get_context_data(**kwargs)
@@ -208,7 +208,7 @@ class Comment_publicateLoginRequiredMixin(LoginRequiredMixin):
         и детализирования."""
         if self.action != "create":
             if request.user.is_anonymous:
-                raise Http404
+                return HttpResponse(status=HTTPStatus.NOT_FOUND)
             get_object_or_404(
                 self.model, pk=kwargs["pk"], author=request.user
             )
@@ -295,7 +295,7 @@ class PaginatorAddMixin:
     paginate_by: int = PAGINATE_NUM
 
     def paginate_list(
-        self, objects_list: List, paginate_by: Optional[int] = None
+        self, objects_list: list, paginate_by: Optional[int] = None
     ) -> Paginator:
         """Пагинирует предоставленный список. Количество элементов на странице
         определяется параметром `paginate_by`. Если `paginate_by` не
@@ -346,7 +346,7 @@ class CategoryDetailView(PaginatorAddMixin, DetailView):
     template_name: str = "blog/category.html"
     queryset = Category.objects.filter(is_published=True)
 
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
         """Добавляет к контексту посты, связанные с категорией."""
         context = super().get_context_data(**kwargs)
         posts = (
